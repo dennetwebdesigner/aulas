@@ -1,0 +1,9 @@
+.remove {
+  width: 100%;
+  padding: 10px;
+  background-color: rgba(182, 17, 17, 0.904);
+  color: white;
+  font-weight: bold;
+  font-family: sans-serif;
+  margin-top: 5px;
+}
