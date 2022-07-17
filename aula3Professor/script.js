@@ -6,6 +6,9 @@ body.style.justifyContent = "center";
 // altera alinha dos items/filhos na vertical
 body.style.alignItems = "center";
 
+// Chamada do banco de dados
+const database = new DataBase();
+
 // elementHTML.classList.add("container");
 // elementHTML.classList.remove("container");
 // container.setAttribute("id", "caontainer");
@@ -32,34 +35,58 @@ list.style.width = "100%";
 list.style.height = "90%";
 list.style.overflowY = "auto";
 
-button.addEventListener("click", () => {
+const showItems = (list, input, data) => {
+  list.innerHTML = "";
+  data.forEach((item, index) => {
+    if (item) {
+      //   Cria o item da lista e altera css
+      let items = document.createElement("div");
+      items.style.width = "90%";
+      items.style.minHeight = "20px";
+      items.style.padding = "10px";
+      items.style.margin = "10px auto";
+      items.style.border = "1px solid black";
+      //   captura valor do input
+      items.textContent = item;
+
+      // limpa o input
+      input.value = "";
+
+      let buttonRemover = document.createElement("button");
+      buttonRemover.classList.add("remove");
+      buttonRemover.textContent = "remover";
+
+      // FALTA REMOVER EVENTO
+
+      items.appendChild(buttonRemover);
+      //   adiciona ao elemento pai -> list
+      list.append(items);
+
+      buttonRemover.addEventListener("click", async () => {
+        const tasks = await database.select();
+        const removed = await database.destroy(index);
+
+        showItems(list, input, tasks);
+      });
+    }
+  });
+};
+
+database.select().then((data) => {
+  showItems(list, input, data);
+});
+
+button.addEventListener("click", async () => {
   if (input.value == "") {
     alert("digite uma tarefa");
     return;
   }
 
-  //   Cria o item da lista e altera css
-  let items = document.createElement("div");
-  items.style.width = "90%";
-  items.style.minHeight = "20px";
-  items.style.padding = "10px";
-  items.style.margin = "10px auto";
-  items.style.border = "1px solid black";
-  //   captura valor do input
-  items.textContent = input.value;
+  const content = await database.insert(input.value);
+  console.log(content.id);
+  const tasks = await database.select();
 
-  // limpa o input
-  input.value = "";
-
-  let buttonRemover = document.createElement("button");
-  buttonRemover.classList.add("remove");
-  buttonRemover.textContent = "remover";
-
-  // FALTA REMOVER EVENTO
-
-  items.appendChild(buttonRemover);
-  //   adiciona ao elemento pai -> list
-  list.append(items);
+  showItems(list, input, tasks);
 });
 
 container.append(list, input, button);
